@@ -1,0 +1,8 @@
+Reset Base de datos
+python -m app.reset_db
+
+Dejar la base de datos en 0
+python -m app.drop_tables
+
+actualizar tablas en base de datos
+python -m app.create_tables

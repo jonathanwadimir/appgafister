@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+sqlalchemy[asyncio]
+aiosqlite
+python-multipart
+streamlit
+requests
+python-telegram-bot==20.6
