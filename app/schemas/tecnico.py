@@ -1,17 +1,16 @@
 from pydantic import BaseModel
-from typing import Optional
 from datetime import date
 
 class TecnicoBase(BaseModel):
     nombre: str
     zona: str
-    certificado_sec: Optional[str] = None
-    emision: Optional[date] = None
+    certificado_sec: str
+    emision: date
 
 class TecnicoCreate(TecnicoBase):
     pass
 
-class TecnicoRead(TecnicoBase):
+class TecnicoOut(TecnicoBase):
     id: int
 
     class Config:

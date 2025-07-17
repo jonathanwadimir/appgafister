@@ -1,23 +1,21 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 from app.models.base import Base
+import enum
+
+class EstadoAsignacion(str, enum.Enum):
+    pendiente = "pendiente"
+    aceptado = "aceptado"
+    rechazado = "rechazado"
 
 class Ticket(Base):
     __tablename__ = "tickets"
 
     id = Column(Integer, primary_key=True, index=True)
-    descripcion = Column(String)
-    multimedia = Column(String, nullable=True)
-    emergencia = Column(Boolean, default=False)
+    descripcion = Column(String, nullable=False)
     cliente_id = Column(Integer, ForeignKey("clientes.id"))
     tecnico_id = Column(Integer, ForeignKey("tecnicos.id"), nullable=True)
+    estado_asignacion = Column(Enum(EstadoAsignacion), default=EstadoAsignacion.pendiente)
 
-    evaluacion = Column(Integer, nullable=True)
-    comentario_evaluacion = Column(String, nullable=True)
-    estado_asignacion = Column(String, default="pendiente")  # opciones: pendiente, aceptado, rechazado
-
-    cliente = relationship("Cliente", back_populates="tickets")
-    tecnico = relationship("Tecnico", back_populates="tickets")
-    postulaciones = relationship("Postulacion", back_populates="ticket", cascade="all, delete-orphan")
-    
-    evaluacion_rel = relationship("Evaluacion", back_populates="ticket", uselist=False, cascade="all, delete-orphan")  # ✅ Relación con modelo Evaluacion
+    cliente = relationship("Cliente")
+    tecnico = relationship("Tecnico")

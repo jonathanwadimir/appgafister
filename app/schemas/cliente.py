@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 class ClienteBase(BaseModel):
     nombre: str
-    correo: str
+    direccion: str
 
 class ClienteCreate(ClienteBase):
     pass

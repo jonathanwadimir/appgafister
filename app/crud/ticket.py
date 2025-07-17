@@ -1,32 +1,24 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.models.ticket import Ticket
+from app.schemas.ticket import TicketCreate
 
-# Crear ticket
-async def create_ticket(db: AsyncSession, ticket: Ticket):
-    db.add(ticket)
+async def crear_ticket(db: AsyncSession, ticket: TicketCreate):
+    nuevo = Ticket(**ticket.model_dump())
+    db.add(nuevo)
     await db.commit()
-    await db.refresh(ticket)
-    return ticket
+    await db.refresh(nuevo)
+    return nuevo
 
-# Obtener tickets por cliente
-async def get_tickets_by_cliente(db: AsyncSession, cliente_id: int):
-    result = await db.execute(select(Ticket).filter(Ticket.cliente_id == cliente_id))
+async def listar_tickets(db: AsyncSession):
+    result = await db.execute(select(Ticket))
     return result.scalars().all()
 
-# Obtener ticket por ID
-async def get_ticket_by_id(db: AsyncSession, ticket_id: int):
-    result = await db.execute(select(Ticket).filter(Ticket.id == ticket_id))
-    return result.scalars().first()
-
-# Obtener todos los tickets (con paginación)
-async def get_tickets(db: AsyncSession, skip: int = 0, limit: int = 100):
-    result = await db.execute(select(Ticket).offset(skip).limit(limit))
-    return result.scalars().all()
-
-# Actualizar estado de asignación
-async def actualizar_estado_asignacion(db: AsyncSession, ticket: Ticket, nuevo_estado: str):
-    ticket.estado_asignacion = nuevo_estado
-    await db.commit()
-    await db.refresh(ticket)
+async def actualizar_estado_asignacion(db: AsyncSession, ticket_id: int, estado: str):
+    result = await db.execute(select(Ticket).where(Ticket.id == ticket_id))
+    ticket = result.scalar_one_or_none()
+    if ticket:
+        ticket.estado_asignacion = estado
+        await db.commit()
+        await db.refresh(ticket)
     return ticket

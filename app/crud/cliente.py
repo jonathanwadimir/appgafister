@@ -1,23 +1,15 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 from app.models.cliente import Cliente
-from app.schemas import ClienteCreate
-from typing import List, Optional
+from app.schemas.cliente import ClienteCreate
+from sqlalchemy.future import select
 
-
-async def create_cliente(db: AsyncSession, cliente_data: ClienteCreate) -> Cliente:
-    cliente = Cliente(**cliente_data.model_dump())
-    db.add(cliente)
+async def crear_cliente(db: AsyncSession, cliente: ClienteCreate):
+    nuevo = Cliente(**cliente.model_dump())
+    db.add(nuevo)
     await db.commit()
-    await db.refresh(cliente)
-    return cliente
+    await db.refresh(nuevo)
+    return nuevo
 
-
-async def get_cliente_by_rut(db: AsyncSession, rut: str) -> Optional[Cliente]:
-    result = await db.execute(select(Cliente).where(Cliente.rut == rut))
-    return result.scalars().first()
-
-
-async def get_clientes(db: AsyncSession) -> List[Cliente]:
+async def listar_clientes(db: AsyncSession):
     result = await db.execute(select(Cliente))
     return result.scalars().all()

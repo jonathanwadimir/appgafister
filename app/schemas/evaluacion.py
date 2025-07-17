@@ -1,15 +1,15 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 class EvaluacionBase(BaseModel):
-    puntaje: int = Field(ge=1, le=5)
-    comentario: str | None = None
+    ticket_id: int
+    puntaje: int
+    comentario: str
 
 class EvaluacionCreate(EvaluacionBase):
-    ticket_id: int
+    pass
 
 class EvaluacionOut(EvaluacionBase):
     id: int
-    ticket_id: int
 
     class Config:
         from_attributes = True

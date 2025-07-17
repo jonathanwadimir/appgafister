@@ -1,16 +1,20 @@
-from sqlalchemy import Column, Integer, ForeignKey, DateTime, String
+from sqlalchemy import Column, Integer, ForeignKey, Enum
 from sqlalchemy.orm import relationship
-from datetime import datetime
 from app.models.base import Base
+import enum
+
+class EstadoPostulacion(str, enum.Enum):
+    pendiente = "pendiente"
+    aceptado = "aceptado"
+    rechazado = "rechazado"
 
 class Postulacion(Base):
     __tablename__ = "postulaciones"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     ticket_id = Column(Integer, ForeignKey("tickets.id"))
     tecnico_id = Column(Integer, ForeignKey("tecnicos.id"))
-    fecha_postulacion = Column(DateTime, default=datetime.utcnow)
-    estado = Column(String, default="pendiente")  # ✅ "pendiente", "aceptado", "rechazado"
+    estado = Column(Enum(EstadoPostulacion), default=EstadoPostulacion.pendiente)
 
-    ticket = relationship("Ticket", back_populates="postulaciones")
-    tecnico = relationship("Tecnico", back_populates="postulaciones")
+    ticket = relationship("Ticket", backref="postulaciones")
+    tecnico = relationship("Tecnico")
