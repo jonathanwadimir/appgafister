@@ -5,10 +5,13 @@ from typing import List
 from app.database import get_db
 from app.auth.auth import get_current_user, require_role
 from app.models.usuario import Usuario
-from app.schemas import PostulacionCreate, PostulacionOut
+from app.schemas.postulacion import PostulacionCreate, PostulacionOut
 from app.crud.postulacion import crear_postulacion, obtener_postulaciones_por_ticket, actualizar_estado_postulacion
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/postulaciones",
+    tags=["Postulaciones"]
+)
 
 @router.post("/", response_model=PostulacionOut)
 async def postular_a_ticket(
@@ -17,7 +20,7 @@ async def postular_a_ticket(
     current_user: Usuario = Depends(require_role("tecnico"))
 ):
     try:
-        return await crear_postulacion(db, postulacion.ticket_id, postulacion.tecnico_id)
+        return await crear_postulacion(db, postulacion)
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -35,7 +38,6 @@ async def listar_postulaciones_de_ticket(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No hay postulaciones para este ticket")
     return postulaciones
 
-# Nuevo endpoint para actualizar estado de postulación
 @router.put("/{postulacion_id}/estado", response_model=PostulacionOut)
 async def cambiar_estado_postulacion(
     postulacion_id: int,

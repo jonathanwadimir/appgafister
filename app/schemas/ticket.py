@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
@@ -15,17 +15,16 @@ class TicketOut(TicketBase):
     tecnico_id: Optional[int]
     estado_asignacion: str
     creado_en: datetime
+    evaluacion: Optional[int] = None
+    comentario_evaluacion: Optional[str] = None
 
     class Config:
         from_attributes = True
 
 class TicketAsignacionUpdate(BaseModel):
-    estado_asignacion: str  # aceptado / rechazado
+    estado_asignacion: str  # Ej: "aceptado" o "rechazado"
 
 class TicketEvaluacion(BaseModel):
-    ticket_id: int = Field(..., description="ID del ticket evaluado")
-    calificacion: int = Field(..., ge=1, le=5, description="Calificación del 1 al 5")
-    comentario: Optional[str] = Field(None, description="Comentario opcional")
-
-    class Config:
-        from_attributes = True
+    ticket_id: int
+    evaluacion: int  # puntuación (por ejemplo 1-5)
+    comentario: Optional[str]

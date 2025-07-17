@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.models.postulacion import Postulacion
-from app.models.ticket import Ticket
 from app.schemas.postulacion import PostulacionCreate
 
 async def crear_postulacion(db: AsyncSession, postulacion: PostulacionCreate):
@@ -11,8 +10,8 @@ async def crear_postulacion(db: AsyncSession, postulacion: PostulacionCreate):
     await db.refresh(nueva)
     return nueva
 
-async def listar_postulaciones(db: AsyncSession):
-    result = await db.execute(select(Postulacion))
+async def obtener_postulaciones_por_ticket(db: AsyncSession, ticket_id: int):
+    result = await db.execute(select(Postulacion).where(Postulacion.ticket_id == ticket_id))
     return result.scalars().all()
 
 async def actualizar_estado_postulacion(db: AsyncSession, postulacion_id: int, estado: str):
@@ -23,3 +22,16 @@ async def actualizar_estado_postulacion(db: AsyncSession, postulacion_id: int, e
         await db.commit()
         await db.refresh(postulacion)
     return postulacion
+
+# Función para asignar siguiente técnico postulado (ejemplo básico)
+async def asignar_siguiente_tecnico_postulado(db: AsyncSession, ticket_id: int):
+    # Aquí deberías implementar la lógica para obtener el siguiente técnico postulado
+    # que aún no haya sido rechazado, o según criterios específicos.
+    result = await db.execute(
+        select(Postulacion)
+        .where(Postulacion.ticket_id == ticket_id)
+        .where(Postulacion.estado == "postulado")  # solo postulaciones activas
+        .order_by(Postulacion.id)
+    )
+    siguiente = result.scalars().first()
+    return siguiente

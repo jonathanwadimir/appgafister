@@ -5,7 +5,10 @@ from app.database import get_db
 from app import crud, models
 from pydantic import BaseModel
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/tecnicos",
+    tags=["Técnicos"]
+)
 
 class TecnicoCreate(BaseModel):
     rut: str
@@ -17,7 +20,7 @@ class TecnicoCreate(BaseModel):
 
 @router.post("/")
 async def crear_tecnico(tecnico: TecnicoCreate, db: AsyncSession = Depends(get_db)):
-    db_tecnico = await crud.get_tecnico(db, tecnico.rut)
+    db_tecnico = await crud.obtener_tecnico_por_id(db, tecnico.rut)
     if db_tecnico:
         raise HTTPException(status_code=400, detail="El técnico ya existe")
     nuevo_tecnico = models.Tecnico(
@@ -29,8 +32,8 @@ async def crear_tecnico(tecnico: TecnicoCreate, db: AsyncSession = Depends(get_d
         foto_perfil=tecnico.foto_perfil_url,
         acepto_terminos=True
     )
-    return await crud.create_tecnico(db, nuevo_tecnico)
+    return await crud.crear_tecnico(db, nuevo_tecnico)
 
 @router.get("/")
 async def listar_tecnicos(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(get_db)):
-    return await crud.get_tecnicos(db, skip, limit)
+    return await crud.listar_tecnicos(db)

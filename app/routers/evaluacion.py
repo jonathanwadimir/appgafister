@@ -17,7 +17,7 @@ async def registrar_evaluacion(
     db: AsyncSession = Depends(get_db),
     current_user: Usuario = Depends(require_role("cliente"))
 ):
-    evaluacion, error = await crear_evaluacion(db, datos)
-    if error:
-        raise HTTPException(status_code=404, detail=error)
+    evaluacion = await crear_evaluacion(db, datos)
+    if not evaluacion:
+        raise HTTPException(status_code=404, detail="Error al crear la evaluación")
     return evaluacion

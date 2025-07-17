@@ -1,14 +1,18 @@
 from pydantic import BaseModel
 
 class UsuarioBase(BaseModel):
-    username: str
+    rut: str
     rol: str
 
-class UserCreate(UsuarioBase):  # Cambiado a UserCreate para que coincida con router
+class UsuarioCreate(UsuarioBase):
     password: str
+    nombre: str
+    email: str
 
-class UserOut(UsuarioBase):  # Cambiado a UserOut
+class UsuarioOut(UsuarioBase):
     id: int
+    nombre: str
+    email: str
 
     class Config:
         from_attributes = True
@@ -18,4 +22,4 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    username: str
+    rut: str
